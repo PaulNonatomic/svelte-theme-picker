@@ -74,6 +74,155 @@ interface ThemePickerConfig {
 }
 ```
 
+## SSR Support (Preventing Flash)
+
+When using SvelteKit with SSR, themes are applied after JavaScript loads, causing a flash of unstyled content (FOUC). Use the `ThemeHead` component or SSR utilities to prevent this.
+
+### Using ThemeHead Component (Recommended)
+
+The easiest way to prevent theme flash in SvelteKit:
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script>
+  import { ThemeHead, ThemePicker, defaultThemes } from 'svelte-theme-picker';
+</script>
+
+<ThemeHead
+  themes={defaultThemes}
+  storageKey="my-app-theme"
+  defaultTheme="dreamy"
+  preloadFonts={true}
+/>
+
+<ThemePicker config={{ themes: defaultThemes, storageKey: 'my-app-theme' }} />
+
+<slot />
+```
+
+The `ThemeHead` component:
+- Injects a blocking script that applies CSS variables before first paint
+- Adds `no-transitions` class to prevent transition animations during hydration
+- Optionally preloads Google Fonts for all themes
+
+### ThemeHead Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `themes` | `Record<string, Theme>` | required | All available themes |
+| `storageKey` | `string` | `'svelte-theme-picker'` | localStorage key |
+| `defaultTheme` | `string` | first theme | Default theme ID |
+| `cssVarPrefix` | `string` | `''` | CSS variable prefix |
+| `preventTransitions` | `boolean` | `true` | Prevent transition animations during hydration |
+| `preloadFonts` | `boolean` | `false` | Enable Google Fonts preloading |
+| `fontConfig` | `FontConfig` | `{ provider: 'google' }` | Font preloading configuration |
+
+### Using SSR Utilities Directly
+
+For more control, use the SSR utilities to generate blocking scripts:
+
+```typescript
+// src/hooks.server.ts
+import { generateSSRHead } from 'svelte-theme-picker';
+import { myThemes } from './themes';
+
+export async function handle({ event, resolve }) {
+  return resolve(event, {
+    transformPageChunk: ({ html }) => {
+      const ssrHead = generateSSRHead({
+        themes: myThemes,
+        storageKey: 'my-app-theme',
+        defaultTheme: 'dreamy',
+      });
+      return html.replace('</head>', `${ssrHead}</head>`);
+    }
+  });
+}
+```
+
+### Removing No-Transitions Class
+
+After hydration, remove the `no-transitions` class to enable animations:
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script>
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
+
+  onMount(() => {
+    // Small delay to ensure hydration is complete
+    setTimeout(() => {
+      document.documentElement.classList.remove('no-transitions');
+    }, 50);
+  });
+</script>
+```
+
+### SSR Utility Functions
+
+```typescript
+import {
+  generateBlockingScript,  // Generate minified blocking script string
+  generateSSRHead,         // Generate complete head HTML (script + styles + fonts)
+  applyThemeToElement,     // Apply theme to an element (sync, for blocking scripts)
+  getThemeCSS,            // Get CSS variable declarations as string
+  extractFonts,           // Extract font names from a theme
+  generateFontPreloadLinks, // Generate Google Fonts preload links
+  themeSchema,            // CSS variable mapping (for consistency)
+} from 'svelte-theme-picker';
+```
+
+## Cross-Tab Synchronization
+
+Enable automatic theme sync across browser tabs:
+
+```svelte
+<script>
+  import { createThemeStore, ThemePicker } from 'svelte-theme-picker';
+
+  const store = createThemeStore({
+    syncTabs: true,  // Enable cross-tab sync
+    storageKey: 'my-app-theme',
+  });
+</script>
+
+<ThemePicker store={store} />
+```
+
+When a user changes the theme in one tab, all other tabs will automatically update. The store listens for `storage` events and syncs the theme state.
+
+To clean up listeners when done:
+
+```typescript
+store.destroy(); // Removes storage event listener
+```
+
+## External Store Synchronization
+
+If you're using an external store and the `ThemePicker` doesn't update when the store changes externally, use the `{#key}` pattern to force a re-render:
+
+```svelte
+<script>
+  import { ThemePicker, createThemeStore } from 'svelte-theme-picker';
+
+  const themeStore = createThemeStore({ /* config */ });
+  let currentThemeId = $state('dreamy');
+
+  // Subscribe to track external changes
+  themeStore.subscribe((themeId) => {
+    currentThemeId = themeId;
+  });
+</script>
+
+<!-- Force re-render when theme changes externally -->
+{#key currentThemeId}
+  <ThemePicker store={themeStore} />
+{/key}
+```
+
+> **Note**: The `ThemePicker` component captures its configuration once at mount. This is intentional for performance. Use `{#key}` to create a new instance when props need to change.
+
 ## Headless Mode (No UI)
 
 The `ThemePicker` component is completely optional. You can use just the store and utilities for full programmatic control without rendering any UI. This is useful when:
@@ -569,6 +718,57 @@ You can provide your own themes:
 <ThemePicker config={{ themes: myThemes, defaultTheme: 'my-theme' }} />
 ```
 
+## Styling the Picker
+
+The `ThemePicker` component can be customized using CSS custom properties. The picker automatically uses your theme's CSS variables as fallbacks, so it adapts to your theme.
+
+### Picker CSS Properties
+
+Override these to customize the picker appearance:
+
+```css
+/* In your global CSS or :root */
+:root {
+  /* Colors */
+  --stp-bg: var(--bg-card);           /* Panel background */
+  --stp-bg-hover: var(--bg-glow);     /* Hover state background */
+  --stp-bg-active: ...;               /* Active/selected item */
+  --stp-border: ...;                  /* Border color */
+  --stp-text: var(--text-primary);    /* Primary text */
+  --stp-text-muted: var(--text-muted);/* Secondary text */
+  --stp-accent: var(--accent-1);      /* Accent color */
+  --stp-accent-glow: ...;             /* Glow effect color */
+
+  /* Trigger button */
+  --stp-trigger-bg: ...;              /* Trigger background gradient */
+  --stp-trigger-color: var(--bg-deep);/* Trigger icon color */
+
+  /* Layout */
+  --stp-radius: 12px;                 /* Panel border radius */
+  --stp-radius-sm: 8px;               /* Item border radius */
+  --stp-space: 12px;                  /* Standard spacing */
+  --stp-space-sm: 8px;                /* Small spacing */
+  --stp-transition: 0.2s ease;        /* Transition timing */
+}
+```
+
+The picker uses `color-mix()` for calculated colors (active states, borders) that automatically adjust to your theme. No `!important` overrides should be needed.
+
+### Theme Mode
+
+Themes can declare a `mode` property (`'light'` or `'dark'`) to help the picker adjust its styling:
+
+```typescript
+const myTheme: Theme = {
+  name: 'My Light Theme',
+  description: 'A light theme',
+  mode: 'light',  // or 'dark'
+  colors: { ... },
+  fonts: { ... },
+  effects: { ... },
+};
+```
+
 ## CSS Variables
 
 The theme picker applies these CSS variables to your document:
@@ -669,17 +869,27 @@ Full TypeScript support with exported types:
 
 ```typescript
 import type {
+  // Theme types
   Theme,
   ThemeColors,
   ThemeFonts,
   ThemeEffects,
   ThemePickerConfig,
+  // Catalog types
   ThemeCatalog,
   ThemeCatalogEntry,
   ThemeMeta,
   ThemeFilterOptions,
+  // SSR types
+  SSRConfig,
+  FontConfig,
+  ThemeSchema,
 } from 'svelte-theme-picker';
 ```
+
+## Migration Guide
+
+Upgrading from a previous version? See [MIGRATION.md](./MIGRATION.md) for breaking changes and migration steps.
 
 ## License
 

@@ -171,15 +171,50 @@
 </div>
 
 <style>
+    /*
+     * CSS Custom Properties for ThemePicker
+     * Override these to customize the picker appearance:
+     *
+     * Colors:
+     *   --stp-bg          : Panel background color
+     *   --stp-bg-hover    : Hover state background
+     *   --stp-bg-active   : Active/selected item background
+     *   --stp-border      : Border color
+     *   --stp-text        : Primary text color
+     *   --stp-text-muted  : Secondary/muted text color
+     *   --stp-accent      : Accent color (trigger, scrollbar, checks)
+     *   --stp-accent-glow : Glow effect color for trigger
+     *
+     * Trigger button:
+     *   --stp-trigger-bg       : Trigger button background
+     *   --stp-trigger-color    : Trigger button icon color
+     *
+     * Layout:
+     *   --stp-radius      : Panel border radius
+     *   --stp-radius-sm   : Button/item border radius
+     *   --stp-space       : Standard spacing
+     *   --stp-space-sm    : Small spacing
+     *   --stp-transition  : Transition duration/easing
+     *
+     * Example usage:
+     *   :root {
+     *     --stp-bg: var(--bg-card);
+     *     --stp-text: var(--text-primary);
+     *     --stp-accent: var(--accent-1);
+     *   }
+     */
     .stp-theme-picker {
-        --stp-bg: #2a2a4a;
-        --stp-bg-hover: #3d3d6b;
-        --stp-bg-active: rgba(168, 85, 247, 0.15);
-        --stp-border: rgba(255, 255, 255, 0.1);
-        --stp-text: #e8e0f0;
-        --stp-text-muted: #9090b0;
-        --stp-accent: #a855f7;
-        --stp-accent-glow: rgba(168, 85, 247, 0.3);
+        /* Fallback to theme variables, then to default values */
+        --stp-bg: var(--bg-card, #2a2a4a);
+        --stp-bg-hover: var(--bg-glow, #3d3d6b);
+        --stp-bg-active: color-mix(in srgb, var(--stp-accent, var(--accent-1, #a855f7)) 15%, transparent);
+        --stp-border: color-mix(in srgb, var(--stp-text, var(--text-primary, #e8e0f0)) 10%, transparent);
+        --stp-text: var(--text-primary, #e8e0f0);
+        --stp-text-muted: var(--text-muted, #9090b0);
+        --stp-accent: var(--accent-1, #a855f7);
+        --stp-accent-glow: color-mix(in srgb, var(--stp-accent) 30%, transparent);
+        --stp-trigger-bg: linear-gradient(135deg, var(--primary-3, #c9a0dc), var(--stp-accent));
+        --stp-trigger-color: var(--bg-deep, #1a1a2e);
         --stp-radius: 12px;
         --stp-radius-sm: 8px;
         --stp-space: 12px;
@@ -221,15 +256,15 @@
         height: 48px;
         border-radius: 50%;
         border: none;
-        background: linear-gradient(135deg, #c9a0dc, #a855f7);
-        color: #1a1a2e;
+        background: var(--stp-trigger-bg);
+        color: var(--stp-trigger-color);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow:
             0 4px 20px var(--stp-accent-glow),
-            0 0 40px rgba(168, 85, 247, 0.1);
+            0 0 40px color-mix(in srgb, var(--stp-accent) 10%, transparent);
         transition: transform var(--stp-transition), box-shadow var(--stp-transition);
         /* Performance: Hint browser to prepare GPU layer for animations */
         will-change: transform;
@@ -239,7 +274,7 @@
         transform: scale(1.1);
         box-shadow:
             0 8px 30px var(--stp-accent-glow),
-            0 0 60px rgba(168, 85, 247, 0.2);
+            0 0 60px color-mix(in srgb, var(--stp-accent) 20%, transparent);
     }
 
     .stp-backdrop {
@@ -251,7 +286,7 @@
     .stp-panel {
         position: absolute;
         width: 320px;
-        background: linear-gradient(135deg, rgba(42, 42, 74, 0.95), rgba(61, 61, 107, 0.9));
+        background: color-mix(in srgb, var(--stp-bg) 95%, transparent);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px); /* Safari support */
         border-radius: var(--stp-radius);
@@ -409,7 +444,7 @@
     }
 
     .stp-list::-webkit-scrollbar-thumb {
-        background: rgba(168, 85, 247, 0.5);
+        background: color-mix(in srgb, var(--stp-accent) 50%, transparent);
         border-radius: 3px;
     }
 
@@ -482,7 +517,7 @@
 
     .stp-check {
         flex-shrink: 0;
-        color: #8ad4d4;
+        color: var(--accent-2, #8ad4d4);
     }
 
     @media (max-width: 640px) {

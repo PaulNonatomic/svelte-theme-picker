@@ -53,6 +53,16 @@
         updatePreviewStatus();
     }
 
+    function resetToDefault() {
+        const defaultId = 'dreamy';
+        const theme = defaultThemes[defaultId];
+        themeStore.setTheme(defaultId);
+        applyTheme(theme);
+        lastTheme = { id: defaultId, name: theme.name };
+        customPickerTheme = defaultId;
+        updatePreviewStatus();
+    }
+
     // Custom picker: preview theme on click
     function selectCustomTheme(themeId) {
         customPickerTheme = themeId;
@@ -262,6 +272,48 @@ const productionThemes = getActiveThemes(catalog);
   }
 \x3C/script>`,
 
+        ssrSupport: `\x3C!-- src/routes/+layout.svelte -->
+\x3Cscript>
+  import { ThemeHead, ThemePicker, defaultThemes } from 'svelte-theme-picker';
+  import { onMount } from 'svelte';
+
+  // Remove no-transitions class after hydration
+  onMount(() => {
+    setTimeout(() => {
+      document.documentElement.classList.remove('no-transitions');
+    }, 50);
+  });
+\x3C/script>
+
+\x3C!-- Prevents theme flash on page load -->
+\x3CThemeHead
+  themes={defaultThemes}
+  storageKey="my-app-theme"
+  defaultTheme="dreamy"
+  preloadFonts={true}
+/>
+
+\x3CThemePicker config={{ storageKey: 'my-app-theme' }} />
+\x3Cslot />`,
+
+        crossTabSync: `\x3Cscript>
+  import { createThemeStore, ThemePicker } from 'svelte-theme-picker';
+  import { onDestroy } from 'svelte';
+
+  // Create store with cross-tab sync enabled
+  const store = createThemeStore({
+    syncTabs: true,  // Theme changes sync across tabs
+    storageKey: 'my-app-theme',
+  });
+
+  // Clean up listener when component unmounts
+  onDestroy(() => {
+    store.destroy();
+  });
+\x3C/script>
+
+\x3CThemePicker {store} />`,
+
         cssVars: `/* Backgrounds */
 --bg-deep, --bg-mid, --bg-card, --bg-glow, --bg-overlay
 
@@ -287,6 +339,7 @@ const productionThemes = getActiveThemes(catalog);
   colors: ThemeColors;
   fonts: ThemeFonts;
   effects: ThemeEffects;
+  mode?: 'light' | 'dark';  // v1.1.0+
 }
 
 interface ThemePickerConfig {
@@ -294,6 +347,7 @@ interface ThemePickerConfig {
   defaultTheme?: string;
   themes?: Record<string, Theme>;
   cssVarPrefix?: string;
+  syncTabs?: boolean;  // v1.1.0+ Cross-tab sync
 }`,
 
         storeInterface: `interface ThemeStore extends Writable<string> {
@@ -306,6 +360,8 @@ interface ThemePickerConfig {
   revertPreview: () => void;
   isPreviewMode: () => boolean;
   getPersistedThemeId: () => string;
+  // Cleanup (v1.1.0+)
+  destroy: () => void;
 }`,
 
         catalogTypes: `interface ThemeMeta {
@@ -368,6 +424,8 @@ const production = catalogToThemes(
             <li><strong>JSON-driven themes</strong> - define themes in JSON with production/test filtering</li>
             <li><strong>Theme catalogs</strong> - organize with metadata, tags, and filtering</li>
             <li><strong>Headless mode</strong> - use the store without UI for programmatic control</li>
+            <li><strong>SSR support</strong> - prevent theme flash with ThemeHead component</li>
+            <li><strong>Cross-tab sync</strong> - automatically sync themes across browser tabs</li>
         </ul>
     </section>
 
@@ -386,6 +444,7 @@ const production = catalogToThemes(
         {/if}
         <div class="button-row">
             <button class="demo-button" onclick={setRandomTheme}>Random Theme</button>
+            <button class="demo-button secondary" onclick={resetToDefault}>Reset to Default</button>
             <button class="demo-button secondary" onclick={() => showInline = !showInline}>
                 {showInline ? 'Hide' : 'Show'} Inline Picker
             </button>
@@ -691,6 +750,50 @@ const production = catalogToThemes(
             <pre><code>{codeSnippets.previewMode}</code></pre>
         </div>
 
+        <div class="code-section new-feature">
+            <p class="code-description">Prevent theme flash during SSR hydration. The ThemeHead component injects a blocking script that applies CSS variables before first paint.</p>
+            <div class="code-header">
+                <h3>SSR Support (v1.1.0+)</h3>
+                <button class="copy-btn" onclick={() => copyCode(codeSnippets.ssrSupport, 'ssrSupport')}>
+                    {#if copiedId === 'ssrSupport'}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Copied!
+                    {:else}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Copy
+                    {/if}
+                </button>
+            </div>
+            <pre><code>{codeSnippets.ssrSupport}</code></pre>
+        </div>
+
+        <div class="code-section new-feature">
+            <p class="code-description">Automatically sync theme changes across browser tabs. When a user changes the theme in one tab, all other tabs update instantly.</p>
+            <div class="code-header">
+                <h3>Cross-Tab Sync (v1.1.0+)</h3>
+                <button class="copy-btn" onclick={() => copyCode(codeSnippets.crossTabSync, 'crossTabSync')}>
+                    {#if copiedId === 'crossTabSync'}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Copied!
+                    {:else}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Copy
+                    {/if}
+                </button>
+            </div>
+            <pre><code>{codeSnippets.crossTabSync}</code></pre>
+        </div>
+
         <div class="code-section">
             <p class="code-description">These CSS custom properties are automatically set on your document root when a theme is applied.</p>
             <div class="code-header">
@@ -955,7 +1058,8 @@ const production = catalogToThemes(
         padding: 1.5rem;
         background: var(--bg-card, #2a2a4a);
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid color-mix(in srgb, var(--text-primary, #e8e0f0) 15%, transparent);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--text-primary, #000) 8%, transparent);
     }
 
     .theme-grid {
@@ -1071,7 +1175,8 @@ const production = catalogToThemes(
         background: var(--bg-card, #2a2a4a);
         padding: 1rem;
         border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid color-mix(in srgb, var(--text-primary, #e8e0f0) 15%, transparent);
+        box-shadow: 0 2px 6px color-mix(in srgb, var(--text-primary, #000) 6%, transparent);
     }
 
     .stat-label {
@@ -1115,7 +1220,8 @@ const production = catalogToThemes(
         background: var(--bg-card, #2a2a4a);
         padding: 1.5rem;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid color-mix(in srgb, var(--text-primary, #e8e0f0) 15%, transparent);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--text-primary, #000) 10%, transparent);
     }
 
     .color-swatches {
@@ -1139,7 +1245,8 @@ const production = catalogToThemes(
         margin-bottom: 1.5rem;
         background: var(--bg-card, #2a2a4a);
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid color-mix(in srgb, var(--text-primary, #e8e0f0) 15%, transparent);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--text-primary, #000) 8%, transparent);
         overflow: hidden;
     }
 
@@ -1181,6 +1288,23 @@ const production = catalogToThemes(
 
     .code-section pre code {
         background: transparent;
+    }
+
+    .code-section.new-feature {
+        border-color: var(--accent-1, #a855f7);
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .code-section.new-feature .code-header h3::after {
+        content: 'NEW';
+        margin-left: 0.5rem;
+        padding: 0.15rem 0.4rem;
+        background: linear-gradient(135deg, var(--accent-1, #a855f7), var(--accent-2, #ff6b9d));
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 600;
+        border-radius: 3px;
+        vertical-align: middle;
     }
 
     .copy-btn {

@@ -76,6 +76,8 @@ export interface Theme {
     fonts: ThemeFonts;
     /** Effect configuration */
     effects: ThemeEffects;
+    /** Theme mode for styling adjustments (affects picker UI, shadows, contrast) */
+    mode?: 'light' | 'dark';
 }
 
 /**
@@ -90,6 +92,8 @@ export interface ThemePickerConfig {
     themes?: Record<string, Theme>;
     /** CSS variable prefix (default: none, uses standard names) */
     cssVarPrefix?: string;
+    /** Enable cross-tab synchronization via storage events (default: false) */
+    syncTabs?: boolean;
 }
 
 /**
@@ -136,4 +140,50 @@ export interface ThemeFilterOptions {
     anyTags?: string[];
     /** Exclude themes with ANY of these tags */
     excludeTags?: string[];
+}
+
+/**
+ * Configuration for SSR blocking script generation
+ */
+export interface SSRConfig {
+    /** All available themes */
+    themes: Record<string, Theme>;
+    /** localStorage key for theme persistence (default: 'svelte-theme-picker-theme') */
+    storageKey?: string;
+    /** Default theme ID if none is stored */
+    defaultTheme?: string;
+    /** CSS variable prefix (default: none) */
+    cssVarPrefix?: string;
+    /** Whether to add no-transitions class during hydration (default: true) */
+    preventTransitions?: boolean;
+    /** Font configuration for preloading */
+    fonts?: FontConfig;
+}
+
+/**
+ * Configuration for font preloading
+ */
+export interface FontConfig {
+    /** Font provider: 'google', 'local', or 'custom' */
+    provider?: 'google' | 'local' | 'custom';
+    /** Font weights to preload per category */
+    weights?: {
+        heading?: number[];
+        body?: number[];
+        mono?: number[];
+    };
+    /** Custom font URL generator (for 'custom' provider) */
+    getFontUrl?: (fontName: string, weights: number[]) => string;
+}
+
+/**
+ * CSS variable schema mapping theme properties to CSS variable names
+ */
+export interface ThemeSchema {
+    /** Color property to CSS variable name mapping */
+    colors: Record<keyof ThemeColors, string>;
+    /** Font property to CSS variable name mapping */
+    fonts: Record<keyof ThemeFonts, string>;
+    /** Effect property to CSS variable name mapping */
+    effects: Record<string, string>;
 }

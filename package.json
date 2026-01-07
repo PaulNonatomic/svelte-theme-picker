@@ -1,6 +1,6 @@
 {
   "name": "svelte-theme-picker",
-  "version": "0.0.1",
+  "version": "1.1.0",
   "description": "A beautiful, customizable theme picker component for Svelte applications",
   "license": "MIT",
   "type": "module",
@@ -53,7 +53,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Nonatomic/svelte-theme-picker.git"
+    "url": "git+https://github.com/PaulNonatomic/svelte-theme-picker.git"
   },
-  "author": "Nonatomic"
+  "homepage": "https://svelte-theme-picker.vercel.app",
+  "bugs": {
+    "url": "https://github.com/PaulNonatomic/svelte-theme-picker/issues"
+  },
+  "author": "PaulNonatomic"
 }

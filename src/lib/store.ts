@@ -24,6 +24,8 @@ export interface ThemeStore extends Writable<string> {
     revertPreview: () => void;
     /** Check if currently in preview mode */
     isPreviewMode: () => boolean;
+    /** Destroy the store and clean up any listeners (e.g., cross-tab sync) */
+    destroy: () => void;
 }
 
 /**
@@ -34,6 +36,7 @@ export function createThemeStore(config: ThemePickerConfig = {}): ThemeStore {
         storageKey = 'svelte-theme-picker',
         defaultTheme = DEFAULT_THEME_ID,
         themes = defaultThemes,
+        syncTabs = false,
     } = config;
 
     function getInitialTheme(): string {
@@ -97,7 +100,31 @@ export function createThemeStore(config: ThemePickerConfig = {}): ThemeStore {
             }
         },
         isPreviewMode: () => previewMode,
+        destroy: () => {
+            if (storageEventHandler) {
+                window.removeEventListener('storage', storageEventHandler);
+                storageEventHandler = null;
+            }
+        },
     };
+
+    // Cross-tab synchronization via storage events
+    let storageEventHandler: ((event: StorageEvent) => void) | null = null;
+
+    if (syncTabs && isBrowser) {
+        storageEventHandler = (event: StorageEvent) => {
+            if (event.key === storageKey && event.newValue) {
+                const newThemeId = event.newValue;
+                if (themes[newThemeId]) {
+                    persistedThemeId = newThemeId;
+                    currentThemeId = newThemeId;
+                    previewMode = false;
+                    set(newThemeId);
+                }
+            }
+        };
+        window.addEventListener('storage', storageEventHandler);
+    }
 
     return store;
 }

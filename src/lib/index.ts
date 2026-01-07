@@ -1,5 +1,6 @@
 // Components
 export { default as ThemePicker } from './ThemePicker.svelte';
+export { default as ThemeHead } from './ThemeHead.svelte';
 
 // Types
 export type {
@@ -13,6 +14,10 @@ export type {
     ThemeCatalogEntry,
     ThemeCatalog,
     ThemeFilterOptions,
+    // SSR types
+    SSRConfig,
+    FontConfig,
+    ThemeSchema,
 } from './types.js';
 
 // Store
@@ -54,3 +59,14 @@ export {
     mergeCatalogs,
     loadCatalogFromJSON,
 } from './catalog.js';
+
+// SSR utilities
+export {
+    generateBlockingScript,
+    generateSSRHead,
+    applyThemeToElement,
+    getThemeCSS,
+    extractFonts,
+    generateFontPreloadLinks,
+    themeSchema,
+} from './ssr.js';

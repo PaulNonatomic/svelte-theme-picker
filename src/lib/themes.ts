@@ -6,6 +6,7 @@ import type { Theme, ThemeCatalog } from './types.js';
 export const dreamy: Theme = {
     name: 'Dreamy',
     description: 'Soft pastels with dreamy atmosphere',
+    mode: 'dark',
     colors: {
         bgDeep: '#1a1a2e',
         bgMid: '#232342',
@@ -48,6 +49,7 @@ export const dreamy: Theme = {
 export const cyberpunk: Theme = {
     name: 'Cyberpunk',
     description: 'High contrast neons against dark backgrounds',
+    mode: 'dark',
     colors: {
         bgDeep: '#0a0a0f',
         bgMid: '#12121a',
@@ -90,6 +92,7 @@ export const cyberpunk: Theme = {
 export const sunset: Theme = {
     name: 'Sunset',
     description: 'Warm oranges and purples like a summer sunset',
+    mode: 'dark',
     colors: {
         bgDeep: '#1a1020',
         bgMid: '#2a1830',
@@ -132,6 +135,7 @@ export const sunset: Theme = {
 export const ocean: Theme = {
     name: 'Ocean',
     description: 'Deep blues and teals with bioluminescent accents',
+    mode: 'dark',
     colors: {
         bgDeep: '#0a1628',
         bgMid: '#0f2035',
@@ -174,6 +178,7 @@ export const ocean: Theme = {
 export const mono: Theme = {
     name: 'Mono',
     description: 'Clean monochromatic design with subtle accents',
+    mode: 'dark',
     colors: {
         bgDeep: '#111111',
         bgMid: '#1a1a1a',
@@ -216,6 +221,7 @@ export const mono: Theme = {
 export const sakura: Theme = {
     name: 'Sakura',
     description: 'Delicate cherry blossom pinks with spring greens',
+    mode: 'dark',
     colors: {
         bgDeep: '#1a1520',
         bgMid: '#251d28',
@@ -258,6 +264,7 @@ export const sakura: Theme = {
 export const aurora: Theme = {
     name: 'Aurora',
     description: 'Mystical aurora borealis dancing across the sky',
+    mode: 'dark',
     colors: {
         bgDeep: '#0a0f1a',
         bgMid: '#0f1725',
@@ -300,6 +307,7 @@ export const aurora: Theme = {
 export const galaxy: Theme = {
     name: 'Galaxy',
     description: 'Deep space with distant stars and cosmic nebulae',
+    mode: 'dark',
     colors: {
         bgDeep: '#05050f',
         bgMid: '#0a0a1a',
@@ -342,6 +350,7 @@ export const galaxy: Theme = {
 export const milk: Theme = {
     name: 'Milk',
     description: 'Clean and creamy whites with warm neutral accents',
+    mode: 'light',
     colors: {
         bgDeep: '#fefefe',
         bgMid: '#faf9f7',
@@ -384,6 +393,7 @@ export const milk: Theme = {
 export const light: Theme = {
     name: 'Light',
     description: 'A crisp, modern light theme with purple accents',
+    mode: 'light',
     colors: {
         bgDeep: '#ffffff',
         bgMid: '#f8f9fa',
