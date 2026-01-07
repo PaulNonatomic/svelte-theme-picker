@@ -1,10 +1,10 @@
 # svelte-theme-picker
 
-A beautiful, customizable theme picker component for Svelte 5 applications.
+A customizable theme picker component for Svelte 5 applications.
 
 ## Features
 
-- 10 beautiful built-in themes (dark and light modes)
+- 10 built-in themes (dark and light modes)
 - Fully customizable - add your own themes
 - Persists selection to localStorage
 - Applies CSS variables to your document
