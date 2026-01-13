@@ -51,8 +51,6 @@
         return generateFontPreloadLinks([...allFonts], fontConfig);
     });
 
-    // No-transitions CSS
-    const noTransitionsCSS = '.no-transitions,.no-transitions *,.no-transitions *::before,.no-transitions *::after{transition:none!important;animation:none!important}';
 </script>
 
 <svelte:head>
@@ -64,6 +62,6 @@
     {@html `<script>${blockingScript}</script>`}
     {#if preventTransitions}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html `<style>${noTransitionsCSS}</style>`}
+        {@html '<style>.no-transitions,.no-transitions *,.no-transitions *::before,.no-transitions *::after{transition:none!important;animation:none!important}</style>'}
     {/if}
 </svelte:head>
