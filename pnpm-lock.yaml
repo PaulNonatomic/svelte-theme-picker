@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      svelte-theme-picker:
-        specifier: ^1.1.0
-        version: 1.1.0(svelte@5.46.1)
     devDependencies:
       '@sveltejs/adapter-vercel':
         specifier: ^6.2.0
@@ -853,11 +849,6 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
-  svelte-theme-picker@1.1.0:
-    resolution: {integrity: sha512-7TeU4+Yw/09x4q7UPCZMlz7wNVvMXQNGah1gYMbQPW/tm75RREnxiBJJSywIqzyQ81FyxeOJNDND4tX23qhuOQ==}
-    peerDependencies:
-      svelte: ^5.0.0
-
   svelte2tsx@0.7.46:
     resolution: {integrity: sha512-S++Vw3w47a8rBuhbz4JK0fcGea8tOoX1boT53Aib8+oUO2EKeOG+geXprJVTDfBlvR+IJdf3jIpR2RGwT6paQA==}
     peerDependencies:
@@ -1606,10 +1597,6 @@ snapshots:
       typescript: 5.9.3
     transitivePeerDependencies:
       - picomatch
-
-  svelte-theme-picker@1.1.0(svelte@5.46.1):
-    dependencies:
-      svelte: 5.46.1
 
   svelte2tsx@0.7.46(svelte@5.46.1)(typescript@5.9.3):
     dependencies:
