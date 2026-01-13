@@ -1,6 +1,6 @@
 {
   "name": "svelte-theme-picker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A beautiful, customizable theme picker component for Svelte applications",
   "license": "MIT",
   "type": "module",
